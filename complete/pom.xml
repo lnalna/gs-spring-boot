@@ -5,13 +5,19 @@
 
     <groupId>org.springframework</groupId>
     <artifactId>gs-spring-boot</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.2.2.RELEASE</version>
     </parent>
+    <properties>
+        <java.version>1.8</java.version>
+        <start-class>hello.Application</start-class>
+        <!--<start-class>hello.BenchMarkTest</start-class>-->
+        <jmh.version>1.22</jmh.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -31,11 +37,19 @@
             <scope>test</scope>
         </dependency>
         <!-- end::tests[] -->
-    </dependencies>
 
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
+        <!-- BenchMark -->
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>${jmh.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>${jmh.version}</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -54,7 +68,43 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.5.1</version>
+                <executions>
+                    <execution>
+                        <id>default-deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <serverId>nexus</serverId>
+                    <nexusUrl>http://localhost:8081/repository/maven-snapshots/</nexusUrl>
+                    <skipStaging>true</skipStaging>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>firstMavenRepo</id>
+            <name>firstMavenRepo</name>
+            <url>http://localhost:8081/repository/firstMavenRepo/</url>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>
 </project>
